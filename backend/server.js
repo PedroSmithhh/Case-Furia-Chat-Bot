@@ -4,12 +4,11 @@ const socketIo = require('socket.io');
 const path = require('path');
 const dialogflow = require('dialogflow');
 
-// Configura o cliente do Dialogflow com o arquivo de credenciais
-const sessionClient = new dialogflow.SessionsClient({
-    keyFilename: path.join(__dirname, 'furia-bot-credentials.json') // JSON do DialogFlow
-  });
-  const projectId = 'furiachatbot-458501'; // ID do projeto Google Cloud
-  const sessionPath = sessionClient.sessionPath(projectId, 'unique-session-id');
+// Configura o cliente do Dialogflow usando variável de ambiente
+const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+const sessionClient = new dialogflow.SessionsClient({ credentials });
+const projectId = credentials.project_id; // Pega o projectId das credenciais
+const sessionPath = sessionClient.sessionPath(projectId, 'unique-session-id');
 
 const app = express();
 const server = http.createServer(app);

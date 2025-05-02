@@ -1,0 +1,23 @@
+# Dependências do Node.js
+node_modules/
+
+# Arquivos de credenciais do Dialogflow
+backend/furia-bot-credentials.json
+
+#Arquivos de ambiente
+.env
+
+# Logs e caches
+npm-debug.log* yarn-debug.log* yarn-error.log* *.log
+
+# Pastas de build ou dist
+dist/ build/
+
+# Arquivos temporários
+*.tmp *.swp
+
+# Arquivos de configuração do VSCode
+.vscode/
+
+# Arquivos de sistema
+.DS_Store Thumbs.db

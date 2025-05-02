@@ -1,0 +1,96 @@
+body {
+    background-color: #1a1a1a;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+  #chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+  }
+  #messages {
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 5px;
+  }
+  #message-form {
+    display: flex;
+    gap: 10px;
+  }
+  #message-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #444;
+    color: #fff;
+  }
+  #send-button {
+    padding: 10px 20px;
+    background-color: #ff6600;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+  }
+  #send-button:hover {
+    background-color: #e65c00;
+  }
+
+  #main-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  #chat-container {
+    flex: 2; /* Chat ocupa mais espaço */
+
+  }
+
+  #live-updates {
+    flex: 1; /* Updates ocupam menos espaço */
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+  }
+  
+  #live-updates h2 {
+    color: #ff6600;
+    margin-top: 0;
+  }
+  
+  #updates-list {
+    height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 5px;
+  }
+  
+  .update {
+    margin: 5px 0;
+    padding: 5px;
+    color: #00ff00; /* Verde pras updates */
+    font-weight: bold;
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.bot-message{
+  color: orange;
+}

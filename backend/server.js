@@ -18,9 +18,6 @@ const io = socketIo(server);
 // Porta dinâmica pro Render
 const PORT = process.env.PORT || 3000;
 
-// Middleware pra parsear JSON do webhook
-app.use(bodyParser.json());
-
 // Configura a pasta frontend como estática pra servir index.html, style.css, etc.
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 

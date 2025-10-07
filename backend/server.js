@@ -2,47 +2,94 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
-// Importa especificamente o SessionsClient do pacote do Dialogflow
 const { SessionsClient } = require('@google-cloud/dialogflow');
 
-// --- SEÇÃO DE AUTENTICAÇÃO REMOVIDA ---
-// Não precisamos mais verificar e parsear 'process.env.GOOGLE_CREDENTIALS'.
-// A biblioteca do Google fará a autenticação automaticamente.
 
-// Configura o cliente do Dialogflow (sem passar credenciais no código)
-// A biblioteca irá procurar a variável de ambiente GOOGLE_APPLICATION_CREDENTIALS sozinha.
-const sessionClient = new SessionsClient();
+// Função principal assíncrona para capturar erros de inicialização
+async function startServer() {
+  try {
+    // ---- TODO O SEU CÓDIGO ANTIGO VAI AQUI DENTRO ----
 
-// Define o ID do projeto explicitamente. É mais seguro e claro.
-const projectId = 'furiachatbot-458501'; 
-const sessionId = 'unique-session-id'; // Pode ser um ID único por usuário no futuro
-const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId);
+    // Configura o cliente do Dialogflow
+    console.log('Iniciando cliente do Dialogflow...');
+    const sessionClient = new SessionsClient();
+    console.log('Cliente do Dialogflow iniciado com sucesso.');
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+    const projectId = 'furiachatbot-458501';
+    const sessionId = 'unique-session-id';
+    const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId);
 
-// Porta dinâmica pro Render
-const PORT = process.env.PORT || 3000;
+    const app = express();
+    const server = http.createServer(app);
+    const io = socketIo(server);
 
-// Configura a pasta frontend como estática pra servir index.html, style.css, imagens, etc.
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
+    const PORT = process.env.PORT || 3000;
 
-// Serve o index.html na rota principal
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
-});
+    app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
-// Função pra simular updates de jogos (fictícios, pra dar vibe de live)
-function sendGameUpdate() {
-   const updates = [
-  'Clutch do KSCERATO! 3k na bombsite B! 🔥',
-  'Placar atual: FURIA 8 x 6 Inimigo. Tô sentindo o comeback! 🐆',
-  'yuurih tá on fire! Headshot atrás de headshot! 💪',
-  'molodoy com um no-scope insano! AWP na mão é perigo! 🏆',
-  'YEKINDAR abrindo o jogo com 2k na entrada! Agressivo demais! 🔥',
-  'Intervalo! FURIA 7 x 8 Inimigo. Bora virar isso, nação!'
- ];
- const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
- io.emit('gameUpdate', randomUpdate);
+    app.get('/', (req, res) => {
+      res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
+    });
+
+    function sendGameUpdate() {
+        // ... (sua função sendGameUpdate sem alterações)
+        const updates = [
+            'Clutch do KSCERATO! 3k na bombsite B! 🔥',
+            'Placar atual: FURIA 8 x 6 Inimigo. Tô sentindo o comeback! 🐆',
+            'yuurih tá on fire! Headshot atrás de headshot! 💪'
+        ];
+        const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
+        io.emit('gameUpdate', randomUpdate);
+    }
+
+    setInterval(sendGameUpdate, 30000);
+
+    async function detectIntent(text) {
+        // ... (sua função detectIntent sem alterações)
+        const request = {
+            session: sessionPath,
+            queryInput: {
+                text: { text, languageCode: 'pt-BR' }
+            }
+        };
+        const responses = await sessionClient.detectIntent(request);
+        return responses[0].queryResult.fulfillmentText;
+    }
+
+    io.on('connection', (socket) => {
+        // ... (seu io.on('connection') sem alterações)
+        console.log('Fã conectado!');
+        socket.emit('message', 'Bot da FURIA: Salve, mano! Bem-vindo ao chat da nação! 🐆 Digita aí e bora torcer!');
+        socket.on('chatMessage', async (msg) => {
+            io.emit('message', msg);
+            const userMessage = msg.replace(/^Fã: /, '');
+            try {
+                const botResponse = await detectIntent(userMessage);
+                if (botResponse) {
+                    io.emit('message', `Bot da FURIA: ${botResponse}`);
+                }
+            } catch (error) {
+                console.error('Erro no Dialogflow:', error);
+                io.emit('message', 'Bot da FURIA: Opa, deu um erro aqui. Tenta de novo, mano! 😅');
+            }
+        });
+        socket.on('disconnect', () => {
+            console.log('Fã desconectado.');
+        });
+    });
+
+    server.listen(PORT, () => {
+      console.log(`Chat da FURIA rodando na porta ${PORT}`);
+    });
+
+    // ---- FIM DO CÓDIGO ANTIGO ----
+  } catch (error) {
+    // Se qualquer coisa der errado na inicialização, o erro será exibido aqui
+    console.error('--- ERRO FATAL AO INICIAR O SERVIDOR ---');
+    console.error(error);
+    process.exit(1); // Encerra o processo com um código de erro
+  }
 }
+
+// Inicia a aplicação
+startServer();
